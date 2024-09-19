@@ -5,7 +5,8 @@ yarn-debug.log*
 yarn-error.log*
 
 #Data
-data/
+
+video/
 
 # Logs
 logs

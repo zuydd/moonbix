@@ -1,0 +1,49 @@
+{
+  "gameDuration": null,
+  "hookSwipeSpeed": 300,
+  "finalHookSwipeSpeed": 500,
+  "itemSettingList": [
+    {
+      "type": "TRAP",
+      "speed": 150,
+      "size": 30,
+      "quantity": 2,
+      "rewardValueList": [-10, -10]
+    },
+    {
+      "type": "REWARD",
+      "speed": 150,
+      "size": 50,
+      "quantity": 3,
+      "rewardValueList": [25, 25, 25]
+    },
+    {
+      "type": "TRAP",
+      "speed": 100,
+      "size": 50,
+      "quantity": 1,
+      "rewardValueList": [-20]
+    },
+    {
+      "type": "REWARD",
+      "speed": 200,
+      "size": 30,
+      "quantity": 5,
+      "rewardValueList": [10, 10, 10, 10, 10]
+    },
+    {
+      "type": "REWARD",
+      "speed": 100,
+      "size": 70,
+      "quantity": 2,
+      "rewardValueList": [50, 50]
+    },
+    {
+      "type": "BONUS",
+      "speed": 80,
+      "size": 60,
+      "quantity": 1,
+      "rewardValueList": [100]
+    }
+  ]
+}

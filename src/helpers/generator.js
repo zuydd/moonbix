@@ -26,6 +26,15 @@ class GeneratorHelper {
     // Trả về x phần tử đầu tiên từ mảng đã trộn
     return shuffled.slice(0, x);
   }
+
+  randomHex(n) {
+    let result = "";
+    const hexChars = "0123456789abcdef";
+    for (let i = 0; i < n; i++) {
+      result += hexChars[Math.floor(Math.random() * 16)];
+    }
+    return result;
+  }
 }
 
 const generatorHelper = new GeneratorHelper();

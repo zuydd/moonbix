@@ -1,34 +1,40 @@
 import axios from "axios";
 import { HttpsProxyAgent } from "https-proxy-agent";
+import { v4 as uuidv4 } from "uuid";
 
 export class HttpService {
-  constructor(log, proxy = null) {
+  constructor(log, device, proxy = null) {
     this.baseURL = [
-      "https://game-domain.blum.codes/api/v1/",
-      "https://gateway.blum.codes/v1/",
-      "https://tribe-domain.blum.codes/api/v1/",
-      "https://user-domain.blum.codes/api/v1/",
-      "https://earn-domain.blum.codes/api/v1/",
+      "https://www.binance.com/bapi/growth/v1/friendly/growth-paas/third-party/",
+      "https://www.binance.com/bapi/growth/v1/friendly/growth-paas/mini-app-activity/third-party/",
     ];
     this.proxy = proxy;
     this.log = log;
     this.token = null;
-    this.refreshToken = null;
-    this.isConnected = false;
+    this.device = device;
     this.headers = {
-      "Content-Type": "application/json",
-      Accept: "application/json, text/plain, */*",
-      "Sec-Fetch-Site": "same-site",
-      "Accept-Language": "vi-VN,vi;q=0.9",
+      accept: "*/*",
+      "accept-language": "vi-VN,vi;q=0.9",
+      lang: "vi",
+      priority: "u=1, i",
+      "bnc-location": "",
+      clienttype: "web",
+      "content-type": "application/json",
+      "sec-fetch-site": "same-origin",
       "Accept-Encoding": "gzip, deflate, br",
-      "Sec-Fetch-Mode": "cors",
-      // Host: "tgapp-api.matchain.io",
-      Origin: "https://telegram.blum.codes",
-      "User-Agent":
-        "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148",
-      Referer: "https://telegram.blum.codes/",
+      "sec-fetch-mode": "cors",
+      Host: "www.binance.com",
+      origin: "https://www.binance.com",
+      referer: "https://www.binance.com/vi/game/tg/moon-bix",
       Connection: "keep-alive",
-      "Sec-Fetch-Dest": "empty",
+      "sec-fetch-dest": "empty",
+      "x-passthrough-token": "",
+      csrftoken: "d41d8cd98f00b204e9800998ecf8427e",
+      "device-info": this.device.deviceInfo,
+      "bnc-uuid": this.device.bnc_uuid,
+      "user-agent": this.device.userAgent,
+      "fvideo-id": "",
+      "fvideo-token": "",
     };
   }
 
@@ -36,21 +42,16 @@ export class HttpService {
     this.token = token;
   }
 
-  updateRefreshToken(token) {
-    this.refreshToken = token;
-  }
-
-  updateConnect(status) {
-    this.isConnected = status;
-  }
-
   initConfig() {
+    const trace_id = uuidv4();
     const headers = {
       ...this.headers,
+      "x-trace-id": trace_id,
+      "x-ui-request-trace": trace_id,
     };
 
     if (this.token) {
-      headers["Authorization"] = `Bearer ${this.token}`;
+      headers["x-growth-token"] = `${this.token}`;
     }
     const config = {
       headers,

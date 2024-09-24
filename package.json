@@ -16,6 +16,7 @@
     "colors": "^1.4.0",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.12",
+    "fingerprintjs2": "^2.1.4",
     "he": "^1.2.0",
     "https-proxy-agent": "^7.0.5",
     "inquirer": "^10.1.8",

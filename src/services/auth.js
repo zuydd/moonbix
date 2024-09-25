@@ -50,7 +50,7 @@ class AuthService {
       const info = {
         access: token,
       };
-      const profile = await this.handleAfterLogin(user, info);
+      const profile = await this.handleAfterLogin(user, info, true);
       if (profile) {
         return {
           status: 1,
@@ -62,11 +62,9 @@ class AuthService {
     }
 
     let infoLogin = await this.login(user);
-    console.log(infoLogin);
 
     if (infoLogin) {
       const profile = await this.handleAfterLogin(user, infoLogin);
-      console.log("123", profile);
       if (profile) {
         return {
           status: 1,
@@ -83,27 +81,30 @@ class AuthService {
     };
   }
 
-  async getProfile(user) {
+  async getProfile(user, skipLog = false) {
     const body = { resourceId: 2056 };
     try {
       const { data } = await user.http.post(1, `user/user-info`, body);
       if (data.success) {
         return data.data;
       } else {
-        user.log.logError(
-          `Lấy thông tin tài khoản thất bại: ${colors.gray(
-            `[${data?.code}]`
-          )} ${data?.message}`
-        );
+        if (!skipLog) {
+          user.log.logError(
+            `Lấy thông tin tài khoản thất bại: ${colors.gray(
+              `[${data?.code}]`
+            )} ${data?.message}`
+          );
+        }
         return null;
       }
     } catch (error) {
-      user.log.logError(
-        `Lấy thông tin tài khoản thất bại: ${colors.gray(
-          `[${error?.response?.status}]`
-        )} ${error?.response?.statusText}`
-      );
-
+      if (!skipLog) {
+        user.log.logError(
+          `Lấy thông tin tài khoản thất bại: ${colors.gray(
+            `[${error?.response?.status}]`
+          )} ${error?.response?.statusText}`
+        );
+      }
       return null;
     }
   }
@@ -118,11 +119,11 @@ class AuthService {
     } catch (error) {}
   }
 
-  async handleAfterLogin(user, info) {
+  async handleAfterLogin(user, info, skipLog = false) {
     const accessToken = info.access || null;
     user.http.updateToken(accessToken);
     fileHelper.saveToken(user.info.id, accessToken);
-    let profile = await this.getProfile(user);
+    let profile = await this.getProfile(user, skipLog);
     if (profile) {
       if (profile.userId === null) {
         await this.referral(user);
@@ -131,8 +132,7 @@ class AuthService {
       user.log.log(
         colors.green("Đăng nhập thành công: ") +
           `Số điểm: ${
-            colors.yellow(Math.round(profile?.metaInfo?.totalGrade)) +
-            user.currency
+            colors.yellow(profile?.metaInfo?.totalGrade) + user.currency
           }`
       );
     }

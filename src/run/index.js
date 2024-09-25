@@ -5,7 +5,9 @@ import delayHelper from "../helpers/delay.js";
 import fileHelper from "../helpers/file.js";
 import generatorHelper from "../helpers/generator.js";
 import authService from "../services/auth.js";
+import gameService from "../services/game.js";
 import server from "../services/server.js";
+import taskService from "../services/task.js";
 import userService from "../services/user.js";
 
 const VERSION = "v0.0.1";
@@ -94,6 +96,17 @@ const run = async (user, index) => {
       countRetryLogin = 0;
     }
 
+    await taskService.handleCheckin(user);
+    await taskService.handleTask(user);
+
+    const awaitTime = generatorHelper.randomInt(
+      DELAY_PLAY_GAME[0],
+      DELAY_PLAY_GAME[1]
+    );
+
+    // Chơi game
+    await gameService.handlePlayGame(user, awaitTime);
+
     // await dailyService.checkin(user);
     // await tribeService.handleTribe(user);
     // await taskService.handleTask(user);
@@ -116,10 +129,7 @@ const run = async (user, index) => {
     //     countdownList[index].created = dayjs().unix();
     //   }
     // }
-    const awaitTime = generatorHelper.randomInt(
-      DELAY_PLAY_GAME[0],
-      DELAY_PLAY_GAME[1]
-    );
+
     countdownList[index].time = (awaitTime + 1) * 60;
     countdownList[index].created = dayjs().unix();
     countdownList[index].running = false;

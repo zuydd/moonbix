@@ -43,13 +43,15 @@ class FakeService {
     return fingerprint;
   }
 
-  createDeviceInfo() {
+  createDeviceInfo(id, indexPayload) {
     const phone = this.randomPhone();
     const version = this.randomVersion(phone.name);
     const canvasCode = this.randomCanvasCode();
     const audio = this.randomAudio();
     const bnc_uuid = uuidv4();
     const info =
+      id +
+      "|" +
       phone.name +
       "|" +
       phone.screen_resolution +
@@ -60,7 +62,9 @@ class FakeService {
       "|" +
       audio +
       "|" +
-      bnc_uuid;
+      bnc_uuid +
+      "|" +
+      indexPayload;
     return info;
   }
 }

@@ -35,6 +35,10 @@ class GeneratorHelper {
     }
     return result;
   }
+
+  randomFloat(n, m) {
+    return (Math.random() * (m - n) + n).toFixed(3);
+  }
 }
 
 const generatorHelper = new GeneratorHelper();

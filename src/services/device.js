@@ -6,12 +6,12 @@ class DeviceService {
 
   initDataDevice(device) {
     const arrDevice = device.split("|");
-    const deviceName = arrDevice[0];
-    const resolution = arrDevice[1];
-    const version = arrDevice[2];
+    const deviceName = arrDevice[1];
+    const resolution = arrDevice[2];
+    const version = arrDevice[3];
     const versionDot = version.replaceAll("_", ".");
-    const canvas_code = arrDevice[3];
-    const audio = arrDevice[4];
+    const canvas_code = arrDevice[4];
+    const audio = arrDevice[5];
 
     const deviceInfoWithoutFingerprint = {
       screen_resolution: resolution,
@@ -44,7 +44,7 @@ class DeviceService {
     );
     return {
       deviceInfo: deviceInfoBase64,
-      bnc_uuid: arrDevice[5],
+      bnc_uuid: arrDevice[6],
       userAgent: deviceInfoWithoutFingerprint.user_agent,
     };
   }

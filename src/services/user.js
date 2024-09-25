@@ -42,9 +42,15 @@ class UserService {
         const info = JSON.parse(userParse.user);
         const proxy = proxies[index] || null;
         // handle device
-        let device = devices[index];
+        let device = devices.find(
+          (d) => d.split("|")[0] === info.id.toString()
+        );
         if (!device) {
-          device = fakeService.createDeviceInfo();
+          const indexPayload = generatorHelper.randomInt(
+            0,
+            database.payload.length - 1
+          );
+          device = fakeService.createDeviceInfo(info.id, indexPayload);
           fileHelper.writeLog("device.txt", device);
         }
         const deviceInfo = deviceService.initDataDevice(device);
@@ -64,6 +70,7 @@ class UserService {
             hash: userParse.hash,
           },
           database,
+          indexPayload: parseInt(device.split("|")[7]),
           proxy,
           http,
           log,

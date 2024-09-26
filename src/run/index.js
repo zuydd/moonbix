@@ -12,13 +12,15 @@ import userService from "../services/user.js";
 
 const VERSION = "v0.0.1";
 // Điều chỉnh khoảng cách thời gian chạy vòng lặp đầu tiên giữa các luồng tránh bị spam request (tính bằng giây)
-const DELAY_ACC = 10;
+const DELAY_ACC = 20;
 // Đặt số lần thử kết nối lại tối đa khi proxy lỗi, nếu thử lại quá số lần cài đặt sẽ dừng chạy tài khoản đó và ghi lỗi vào file log
 const MAX_RETRY_PROXY = 20;
 // Đặt số lần thử đăng nhập tối đa khi đăng nhập lỗi, nếu thử lại quá số lần cài đặt sẽ dừng chạy tài khoản đó và ghi lỗi vào file log
 const MAX_RETRY_LOGIN = 20;
-// Cài đặt thời gian chờ sau mỗi lần chơi game (nên để từ 65 - 70 phút)
-const DELAY_PLAY_GAME = [65, 70];
+// Cài đặt thời gian chờ sau mỗi lần chơi game (nên để từ 60 - 65 phút)
+const DELAY_PLAY_GAME = [60, 65];
+// Cài đặt thời gian ngừng chơi game tránh chơi láo 24/7 game nó đa nghi. Nhập vào các khung giờ mà bạn muốn không chơi game, ví dụ muốn ngưng chơi game từ 11 giờ tối đến 6 giờ sáng thì nhập: [23, 0, 1, 2, 3, 4, 5, 6]
+const STOP_PLAY_GAME = [23, 0, 1, 2, 3, 4, 5, 6];
 // Cài đặt đếm ngược đến lần chạy tiếp theo
 const IS_SHOW_COUNTDOWN = true;
 const countdownList = [];
@@ -105,30 +107,18 @@ const run = async (user, index) => {
     );
 
     // Chơi game
-    await gameService.handlePlayGame(user, awaitTime);
-
-    // await dailyService.checkin(user);
-    // await tribeService.handleTribe(user);
-    // await taskService.handleTask(user);
-    // await inviteClass.handleInvite(user);
-    // let awaitTime = await farmingClass.handleFarming(
-    //   user,
-    //   login.profile?.farming
-    // );
-
-    // const minutesUntilNextGameStart = await gameService.handleGame(
-    //   user,
-    //   login.profile?.playPasses,
-    //   TIME_PLAY_GAME
-    // );
-    // if (minutesUntilNextGameStart !== -1) {
-    //   const offset = dayjs().unix() - countdownList[index].created;
-    //   const countdown = countdownList[index].time - offset;
-    //   if (minutesUntilNextGameStart * 60 < countdown) {
-    //     countdownList[index].time = (minutesUntilNextGameStart + 1) * 60;
-    //     countdownList[index].created = dayjs().unix();
-    //   }
-    // }
+    const isStopPlayGame = STOP_PLAY_GAME.includes(dayjs().hour);
+    if (isStopPlayGame) {
+      user.log.log(
+        colors.yellow(
+          `Bạn đã cài đặt không chơi game trong khung giờ này, chờ lần chơi mới sau: ${colors.blue(
+            `${awaitTime} phút`
+          )}`
+        )
+      );
+    } else {
+      await gameService.handlePlayGame(user, awaitTime);
+    }
 
     countdownList[index].time = (awaitTime + 1) * 60;
     countdownList[index].created = dayjs().unix();

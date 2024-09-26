@@ -1,5 +1,6 @@
 import colors from "colors";
 import delayHelper from "../helpers/delay.js";
+import generatorHelper from "../helpers/generator.js";
 import authService from "./auth.js";
 import payloadService from "./payload.js";
 
@@ -12,9 +13,9 @@ class GameService {
       const { data } = await user.http.post(1, "game/start", body);
       if (data.success) {
         user.log.log(
-          `Bắt đầu chơi game [lượt ${index}], hoàn thành sau: ${colors.blue(
-            `45s`
-          )}`
+          `Bắt đầu chơi game ${colors.gray(
+            `[lượt ${index}]`
+          )}, hoàn thành sau: ${colors.blue(`45s`)}`
         );
         await authService.getProfile(user);
         return data.data;
@@ -27,12 +28,21 @@ class GameService {
         return null;
       }
     } catch (error) {
-      user.log.logError(
-        `Bắt đầu chơi game thất bại: ${colors.gray(
-          `[${error?.response?.status}]`
-        )} ${error?.response?.statusText}`
-      );
-      return null;
+      if ([501, 502, 503, 504, 505].includes(data?.code)) {
+        user.log.logError(
+          `Bắt đầu chơi game thất bại do máy chủ quá tải, tự động thử lại sau ${colors.blue(
+            `5 phút`
+          )}`
+        );
+        return -1;
+      } else {
+        user.log.logError(
+          `Bắt đầu chơi game thất bại: ${colors.gray(
+            `[${error?.response?.status}]`
+          )} ${error?.response?.statusText}`
+        );
+        return null;
+      }
     }
   }
 
@@ -64,11 +74,21 @@ class GameService {
           return false;
         }
       } catch (error) {
-        user.log.logError(
-          `Chơi game thất bại: ${colors.gray(`[${error?.response?.status}]`)} ${
-            error?.response?.statusText
-          }`
-        );
+        if ([501, 502, 503, 504, 505].includes(data?.code)) {
+          user.log.logError(
+            `Chơi game thất bại do máy chủ quá tải, tự động thử lại sau ${colors.blue(
+              `5 phút`
+            )}`
+          );
+          return -1;
+        } else {
+          user.log.logError(
+            `Chơi game thất bại: ${colors.gray(
+              `[${error?.response?.status}]`
+            )} ${error?.response?.statusText}`
+          );
+          return null;
+        }
       }
     } else {
       user.log.logError(`Chơi game thất bại do không tạo được dữ liệu payload`);
@@ -83,9 +103,18 @@ class GameService {
       if (totalPlayGame > 0) {
         user.log.log(`Còn ${colors.blue(totalPlayGame)} lượt chơi game`);
         for (let index = 0; index < totalPlayGame; index++) {
+          await delayHelper.delay(generatorHelper.randomInt(5, 10));
           const dataStart = await this.startGame(user, index + 1);
+          if (dataStart === -1) {
+            await delayHelper.delay(5 * 60);
+            continue;
+          }
           if (dataStart) {
-            await this.completeGame(user, dataStart);
+            const statusComplete = await this.completeGame(user, dataStart);
+            if (dataStart === -1) {
+              await delayHelper.delay(5 * 60);
+              continue;
+            }
           }
         }
 

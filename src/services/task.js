@@ -36,7 +36,9 @@ class TaskService {
       if (data.success) {
         if (task.resourceId === 2057) {
           user.log.log(
-            `Checkin thành công, phần thưởng: ${
+            `Checkin thành công ${colors.blue(
+              `${data?.data?.completedCount || 1} ngày liên tiếp`
+            )}, phần thưởng: ${
               colors.yellow(task?.rewardList[0]?.amount) + user.currency
             }`
           );
@@ -85,7 +87,13 @@ class TaskService {
       await this.completeTask(user, taskCheckin);
       await authService.getProfile(user);
     } else {
-      user.log.log(colors.magenta(`Đã checkin hôm nay!`));
+      user.log.log(
+        colors.magenta(
+          `Đã checkin hôm nay! ${colors.blue(
+            `${taskCheckin?.completedCount || 1} ngày liên tiếp`
+          )}`
+        )
+      );
     }
   }
 

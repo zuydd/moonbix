@@ -2,6 +2,7 @@ import colors from "colors";
 import he from "he";
 import { parse } from "querystring";
 import fileHelper from "../helpers/file.js";
+import generatorHelper from "../helpers/generator.js";
 import { LogHelper } from "../helpers/log.js";
 import deviceService from "./device.js";
 import fakeService from "./fake.js";

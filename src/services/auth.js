@@ -38,6 +38,22 @@ class AuthService {
     }
   }
 
+  async participated(user) {
+    const body = {
+      resourceId: 2056,
+    };
+    try {
+      const { data } = await user.http.post(1, "game/participated", body);
+      if (data.success) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      return false;
+    }
+  }
+
   async handleLogin(user) {
     console.log(
       `============== Chạy tài khoản ${user.index} | ${user.info.fullName.green} ==============`
@@ -127,12 +143,13 @@ class AuthService {
     if (profile) {
       if (profile.userId === null) {
         await this.referral(user);
+        await this.participated(user);
         profile = await this.getProfile(user);
       }
       user.log.log(
         colors.green("Đăng nhập thành công: ") +
           `Số điểm: ${
-            colors.yellow(profile?.metaInfo?.totalGrade) + user.currency
+            colors.yellow(profile?.metaInfo?.totalGrade || 0) + user.currency
           }`
       );
     }

@@ -1,4 +1,5 @@
 import colors from "colors";
+import dayjs from "dayjs";
 import fileHelper from "../helpers/file.js";
 
 class AuthService {
@@ -15,6 +16,7 @@ class AuthService {
       if (data?.success) {
         return {
           access: data?.data?.accessToken,
+          isNewToken: true,
         };
       } else {
         if (!skipLog) {
@@ -59,12 +61,20 @@ class AuthService {
       `============== Chạy tài khoản ${user.index} | ${user.info.fullName.green} ==============`
     );
 
-    let token = fileHelper.getTokenById(user.info.id);
+    const tokenData = fileHelper.getTokenById(user.info.id);
 
-    let isExpired = false;
-    if (token) {
+    let expired = dayjs().unix();
+    let token = null;
+    if (tokenData) {
+      const arrTokenData = tokenData.split("|");
+      expired = arrTokenData[0];
+      token = arrTokenData[1];
+    }
+
+    if (token && dayjs().unix() < expired) {
       const info = {
         access: token,
+        isNewToken: false,
       };
       const profile = await this.handleAfterLogin(user, info, true);
       if (profile) {
@@ -72,8 +82,6 @@ class AuthService {
           status: 1,
           profile,
         };
-      } else {
-        isExpired = true;
       }
     }
 
@@ -138,7 +146,12 @@ class AuthService {
   async handleAfterLogin(user, info, skipLog = false) {
     const accessToken = info.access || null;
     user.http.updateToken(accessToken);
-    fileHelper.saveToken(user.info.id, accessToken);
+    if (info.isNewToken) {
+      const timestampExp = dayjs().add(6, "hour").unix();
+      const tokenSave = timestampExp + "|" + accessToken;
+      fileHelper.saveToken(user.info.id, tokenSave);
+    }
+
     let profile = await this.getProfile(user, skipLog);
     if (profile) {
       if (profile.userId === null) {

@@ -28,7 +28,7 @@ class GameService {
         return null;
       }
     } catch (error) {
-      if ([501, 502, 503, 504, 505].includes(data?.code)) {
+      if ([501, 502, 503, 504, 505].includes(error?.response?.status)) {
         user.log.logError(
           `Bắt đầu chơi game thất bại do máy chủ quá tải, tự động thử lại sau ${colors.blue(
             `5 phút`
@@ -74,7 +74,7 @@ class GameService {
           return false;
         }
       } catch (error) {
-        if ([501, 502, 503, 504, 505].includes(data?.code)) {
+        if ([501, 502, 503, 504, 505].includes(error?.response?.status)) {
           user.log.logError(
             `Chơi game thất bại do máy chủ quá tải, tự động thử lại sau ${colors.blue(
               `5 phút`
@@ -111,7 +111,7 @@ class GameService {
           }
           if (dataStart) {
             const statusComplete = await this.completeGame(user, dataStart);
-            if (dataStart === -1) {
+            if (statusComplete === -1) {
               await delayHelper.delay(5 * 60);
               continue;
             }

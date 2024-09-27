@@ -179,6 +179,7 @@ class PayloadService {
     let template = "";
     const listData = items.filter((i) => i.template && i.type !== "-1");
 
+    let countCheck = 0;
     while (template === "") {
       const indexRandom = generatorHelper.randomInt(0, arrTemplate.length - 1);
       const templateCheck = arrTemplate[indexRandom];
@@ -186,7 +187,14 @@ class PayloadService {
         item.type === "-1"
           ? true
           : this.checkPosition(listData, templateCheck, item);
-      if (isCheck) template = templateCheck;
+      if (isCheck) {
+        template = templateCheck;
+      } else {
+        countCheck++;
+      }
+      if (countCheck > 50) {
+        template = templateCheck;
+      }
     }
 
     return template;

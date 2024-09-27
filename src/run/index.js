@@ -107,7 +107,7 @@ const run = async (user, index) => {
     );
 
     // Chơi game
-    const isStopPlayGame = STOP_PLAY_GAME.includes(dayjs().hour);
+    const isStopPlayGame = STOP_PLAY_GAME.includes(dayjs().hour());
     if (isStopPlayGame) {
       user.log.log(
         colors.yellow(
@@ -208,8 +208,3 @@ if (IS_SHOW_COUNTDOWN && users.length) {
 }
 
 setInterval(() => {}, 1000); // Để script không kết thúc ngay
-
-// fakeService.createDeviceInfo();
-
-// const users = await userService.loadUser();
-// console.log(users);

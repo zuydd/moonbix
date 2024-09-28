@@ -162,7 +162,10 @@ class AuthService {
       user.log.log(
         colors.green("Đăng nhập thành công: ") +
           `Số điểm: ${
-            colors.yellow(profile?.metaInfo?.totalGrade || 0) + user.currency
+            colors.yellow(
+              profile?.metaInfo?.totalGrade +
+                profile?.metaInfo?.referralTotalGrade || 0
+            ) + user.currency
           }`
       );
     }

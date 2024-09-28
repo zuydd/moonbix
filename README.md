@@ -10,6 +10,8 @@
 > [!WARNING]
 > Mọi hành vi buôn bán tool dưới bất cứ hình thức nào đều không được cho phép!
 
+Video hướng dẫn 👉👉 https://www.youtube.com/watch?v=NQWI7CMD3JI
+
 ## 🛠️ Hướng dẫn cài đặt
 
 > Yêu cầu đã cài đặt NodeJS
